@@ -285,7 +285,7 @@ export default class Gateway{
           "_remoteUri": "<sip:50015@172.16.104.17>" 
         */
         
-       let destination="+"+call._localNumber; //=call._localUri; <sip:900@10.42.0.100;ob
+       let destination=(call && call._localNumber) ? String(call._localNumber) : ""; //=call._localUri; <sip:900@10.42.0.100;ob
 
         if((call._localNumber=="50014")||(call._localNumber=="50015")||(call._localNumber=="50016")||(call._localNumber=="50017")||(call._localNumber=="50018"))
         {
@@ -317,7 +317,11 @@ export default class Gateway{
 
         console.log("standart call");
         //destination="+79006367756";
-        destination="+"+destination;
+        destination = destination.startsWith("+") ? destination : `+${destination}`;
+        if(destination === "+") {
+          console.log("Skip dialing: empty local number in SIP call");
+          return;
+        }
 
         console.log("DIALING");
         this.tEndpoint.makeCall(1,destination, options).then((call1)=>{this.teleCall = call1;});
